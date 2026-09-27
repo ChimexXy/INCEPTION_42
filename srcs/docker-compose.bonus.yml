@@ -1,0 +1,77 @@
+services:
+  nginx:
+    environment:
+      - ENABLE_BONUS=1
+
+  wordpress:
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  redis:
+    image: redis:inception
+    container_name: redis
+    build:
+      context: ./requirements/bonus/redis
+    networks:
+      - inception
+    restart: always
+
+  ftp:
+    image: ftp:inception
+    container_name: ftp
+    build:
+      context: ./requirements/bonus/ftp
+    environment:
+      - FTP_USER=${FTP_USER}
+    secrets:
+      - ftp_password
+    volumes:
+      - wordpress_files:/var/www/html
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    restart: always
+
+  adminer:
+    image: adminer:inception
+    container_name: adminer
+    build:
+      context: ./requirements/bonus/adminer
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - inception
+    restart: always
+
+  static-site:
+    image: static-site:inception
+    container_name: static-site
+    build:
+      context: ./requirements/bonus/static-site
+    networks:
+      - inception
+    restart: always
+
+  status:
+    image: status:inception
+    container_name: status
+    build:
+      context: ./requirements/bonus/status
+    networks:
+      - inception
+    restart: always
+
+secrets:
+  ftp_password:
+    file: ../secrets/ftp_password.txt

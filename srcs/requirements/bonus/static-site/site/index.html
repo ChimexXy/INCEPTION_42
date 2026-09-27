@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inception &middot; mozahnou</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <p class="kicker">42 / 1337 &middot; System Administration</p>
+  <h1>Inception</h1>
+  <p class="lead">
+    A small production-shaped infrastructure, built from scratch with Docker:
+    every service in its own container, every image written by hand, one TLS
+    door in front of all of it.
+  </p>
+  <p class="meta">Static showcase &middot; HTML, CSS and vanilla JavaScript &middot; no PHP</p>
+</header>
+
+<main>
+  <section>
+    <h2>The stack</h2>
+    <div class="grid" id="stack"></div>
+  </section>
+
+  <section>
+    <h2>Design rules</h2>
+    <ul class="rules">
+      <li><strong>One process per container.</strong> Each image ends in <code>exec</code>, so the real daemon is PID&nbsp;1 and receives signals directly.</li>
+      <li><strong>No ready-made images.</strong> Every Dockerfile starts from <code>debian:bookworm</code> &mdash; the penultimate stable Debian &mdash; and installs its service itself.</li>
+      <li><strong>Secrets are files, not variables.</strong> Passwords are mounted at <code>/run/secrets/</code>; nothing sensitive is baked into a layer or printed by <code>docker inspect</code>.</li>
+      <li><strong>One entry point.</strong> Only 443 is published, TLSv1.2 and TLSv1.3 only. The database is never reachable from the host.</li>
+      <li><strong>State lives in named volumes</strong> under <code>/home/mozahnou/data</code>, so containers stay disposable.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Try it</h2>
+    <div class="cmds">
+      <code><span class="c">#</span> mandatory stack only</code>
+      <code><span class="c">$</span> make</code>
+      <code><span class="c">#</span> mandatory + bonus</code>
+      <code><span class="c">$</span> make bonus</code>
+      <code><span class="c">#</span> the checks behind TESTING_ROADMAP.md</code>
+      <code><span class="c">$</span> make test &amp;&amp; make test-bonus</code>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Built by <strong>mozahnou</strong> &middot; <span id="year"></span></p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
